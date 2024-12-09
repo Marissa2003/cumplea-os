@@ -1,30 +1,143 @@
 <!DOCTYPE html>
 <html>
-    <head>
+<head>
+  <!-- script de A-Frame versión 1.0.4 -->
+  <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+  <!-- script de AR.JS con soporte de marker + location -->
+  <script src="https://jeromeetienne.github.io/AR.js/aframe/build/aframe-ar.js"></script>
+  <script src="gesture-detector.js"></script>
+  <script src="gesture-handler.js"></script>
+</head>
+<body style="margin: 0; overflow: hidden;">
+  <a-scene 
+    embedded 
+    arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;" 
+    renderer="logarithmicDepthBuffer: true;" 
+    vr-mode-ui="enabled: false" 
+    gesture-detector 
+    id="scene">
+    
+    <!-- Asset Management -->
+    <a-assets>
+      <a-asset-item id="modelo" src="modelos\bouquet.glb"></a-asset-item>
+      <a-asset-item id="modelo2" src="modelos\happy_birthday_cake.glb"></a-asset-item>
+      <a-asset-item id="modelo3" src="modelos\cake_3d.glb"></a-asset-item>
+    </a-assets>
 
-        <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
-        <script src="https://jeromeetienne.github.io/AR.js/aframe/build/aframe-ar.js"></script>
-        <script src="gesture-detector.js"></script>
-        <script src="gesture-handler.js"></script>
-        </head>
+    <!-- Primer marcador -->
+    <a-marker 
+      type="barcode" 
+      value="10" 
+      raycaster="objects: .clickable" 
+      emitevents="true" 
+      cursor="fuse: false; rayOrigin: mouse;">
+      <a-entity 
+        gltf-model="#modelo" 
+        scale="0.84367 0.84367 0.84367" 
+        position="0.21721 1.14717 0.54133" 
+        rotation="5.437 18.159 -0.634" 
+        class="clickable" 
+        gesture-handler>
+      </a-entity>
+    </a-marker>
 
-        <body style="margin : 0px; overflow: hidden;">
-            <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false; detectionMode:mono_and_matrix; matrixCodeType: 3x3;"
-            renderer="logarithmicDepthBuffer: true;" vr-mode-ui="enabled: false" gesture-detector id="scene">
-            <a-assets>
-                <a-asset-item id="iron man" src="modelos\cake_3d.glb"></a-asset-item>
-                <a-asset-item id="perro" src="modelos\bouquet.glb"></a-asset-item>
-            </a-assets>
-            <a-marker type="barcode" value="21" raycaster="objects: .clickable" emitevents="true" cursor="fuse: false; rayOrigin: mouse;">
-<a-entity gltf-model="#iron man" scale="20 20 10" class="clickable" gesture-handler></a-entity>
-</a-marker>
-<a-marker type="barcode" value="10" raycaster="objects: .clickable" emitevents="true" cursor="fuse: false; rayOrigin: mouse;">
-<a-entity
-gltf-model="#perro" scale="5 5 5" class="clickable" gesture-handler>
-</a-entity>
-</a-marker>
+    <!-- Segundo marcador -->
+    <a-marker 
+      type="barcode" 
+      value="21" 
+      raycaster="objects: .clickable" 
+      emitevents="true" 
+      cursor="fuse: false; rayOrigin: mouse;">
+      <a-entity 
+        gltf-model="#modelo2" 
+        scale="1.254 1.254 1.254" 
+        position="0.161 0.027 0.410" 
+        rotation="-4.764 18.272 18.756" 
+        class="clickable" 
+        gesture-handler
+        sound="src: #audioradar; autoplay: false; volume: 1">
+      </a-entity>
+    </a-marker>
 
-<a-entity camera></a-entity>
-</a-scene>
+    <!-- Tercer marcador -->
+    <a-marker 
+      type="barcode" 
+      value="40" 
+      raycaster="objects: .clickable" 
+      emitevents="true" 
+      cursor="fuse: false; rayOrigin: mouse;">
+      <a-entity 
+        gltf-model="#modelo3" 
+        scale="0.0533 0.053 0.0533" 
+        position="0.117 0.252 0.479" 
+        rotation="-20.027 14.129 6.120" 
+        class="clickable" 
+        gesture-handler>
+      </a-entity>
+    </a-marker>
+
+    <!-- Camera -->
+    <a-entity camera></a-entity>
+
+  </a-scene>
+  <script>
+    var audioRadar = document.getElementById('audioradar');
+ var audioBall = document.getElementById('audioball');
+ var audioOpening1 = document.getElementById('audioOpening1');
+ var audioOpening2 = document.getElementById('audioOpening2');
+
+ function stopAllAudio() {
+   [audioRadar, audioBall, audioOpening1, audioOpening2].forEach(audio => {
+     if (audio) {
+       audio.pause();
+       audio.currentTime = 0; // Reinicia el audio al inicio
+     }
+   });
+ }
+
+ // Control de audio para el marcador 10
+ document.querySelector('[value="10"]').addEventListener('markerFound', function () {
+   stopAllAudio();
+   audioOpening1?.play();
+ });
+
+ document.querySelector('[value="10"]').addEventListener('markerLost', function () {
+   audioOpening1?.pause();
+   audioOpening1.currentTime = 0;
+ });
+
+ // Control de audio para el marcador 24
+ document.querySelector('[value="24"]').addEventListener('markerFound', function () {
+   stopAllAudio();
+   audioRadar?.play();
+ });
+
+ document.querySelector('[value="24"]').addEventListener('markerLost', function () {
+   audioRadar?.pause();
+   audioRadar.currentTime = 0;
+ });
+
+ // Control de audio para el marcador 30
+ document.querySelector('[value="30"]').addEventListener('markerFound', function () {
+   stopAllAudio();
+   audioOpening2?.play();
+ });
+
+ document.querySelector('[value="30"]').addEventListener('markerLost', function () {
+   audioOpening2?.pause();
+   audioOpening2.currentTime = 0;
+ });
+
+ // Control de audio para el marcador 45
+ document.querySelector('[value="45"]').addEventListener('markerFound', function () {
+   stopAllAudio();
+   audioBall?.play();
+ });
+
+ document.querySelector('[value="45"]').addEventListener('markerLost', function () {
+   audioBall?.pause();
+   audioBall.currentTime = 0;
+ });
+</script>
 </body>
 </html>
